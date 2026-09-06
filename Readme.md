@@ -19,7 +19,6 @@ OllaMerge是一个**图形化**工具，可简化LoRA适配器与原始模型的
 ## 使用方法
 
 由于是图形化工具，使用方法非常简便。只需要在Release页面中下载好自解压文件（.exe），解压后在文件夹内双击**OllaMerge.exe**运行即可。
-[![Download](https://img.shields.io/badge/Download-v0.1-green?style=for-the-badge)](https://github.com/HandsomeTurtle0307/OllaMerge/releases)
 
 ## 系统要求
 
@@ -60,7 +59,6 @@ While fine-tuning large models using my own dataset (Saudade-dataset), I encount
 ## How to use
 
 As a graphical application, it's extremely simple to get started. Just download the self-extracting executable (.exe) from the Releases page, extract the files, and double-click **OllaMerge.exe** in the folder to run.
-[![Download](https://img.shields.io/badge/Download-v0.1-green?style=for-the-badge)](https://github.com/HandsomeTurtle0307/OllaMerge/releases)
 
 ## System Requirements
 
