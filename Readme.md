@@ -6,8 +6,6 @@ Chinese/English
 
 # OllaMerge Readme
 
-大家好！OllaMerge上线啦！
-
 ## 这是什么
 
 OllaMerge是一个**图形化**工具，可简化LoRA适配器与原始模型的合并以及模型在Ollama上部署的过程
@@ -45,8 +43,6 @@ OllaMerge是一个**图形化**工具，可简化LoRA适配器与原始模型的
 - **[LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)**
 
 # OllaMerge Readme
-
-Hello everyone! OllaMerge is now live!
 
 ## What is this?
 
