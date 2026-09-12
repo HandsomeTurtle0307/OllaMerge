@@ -17,8 +17,15 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->spinExportSize->addItem("1 GB",1);
+    ui->spinExportSize->addItem("2 GB",2);
+    ui->spinExportSize->addItem("4 GB",4);
+    ui->spinExportSize->addItem("8 GB",8);
+    ui->spinExportSize->addItem("16 GB",16);
+    ui->spinExportSize->setCurrentIndex(2);
+    ui->chkSafetensors->setChecked(true);
+    ui->logTextEdit->setReadOnly(true);
 }
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -67,6 +74,7 @@ void MainWindow::on_selectLoraBtn_clicked(){
 void MainWindow::on_mergeBtn_clicked(){
     QString basePath=ui->basePathlineEdit->text();
     QString loraPath=ui->loraPathlineEdit->text();
+    QString outputPath=ui->modleSavePathlineEdit->text();
 
     if(basePath.isEmpty()){
         QMessageBox::warning(this,"提示","你好像没选择基础模型文件夹哦~");
@@ -97,6 +105,22 @@ void MainWindow::on_mergeBtn_clicked(){
         return;
     }
 
+    if(outputPath.isEmpty()){
+        QMessageBox::warning(this,"提示","你好像没选保存在哪！");
+        return;
+    }
+
+    if(!QDir(outputPath).exists()){
+        QMessageBox::warning(this,"提示","选择的保存位置好像不存在呢，是不是选错了？");
+        return;
+    }
+
+    QDir selectedDir(outputPath);
+    QStringList entries=selectedDir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot);
+    if(!entries.isEmpty()){
+        QMessageBox::warning(this,"提示","选择的保存文件夹不是空的！重新选下？");
+        return;
+    }
     QProcess testProcess;
     testProcess.start("llamafactory-cli",{"--help"});
     testProcess.waitForFinished(3000);
@@ -105,20 +129,27 @@ void MainWindow::on_mergeBtn_clicked(){
         return;
     }
 
+    bool isSafetensors=ui->chkSafetensors->isChecked();
+    int exportSize=ui->spinExportSize->currentData().toInt();
     ui->mergeBtn->setEnabled(false);
-    appendLog("开始合并");
+    appendLog("开始合并！");
     appendLog("基础模型："+basePath);
     appendLog("LoRA路径："+loraPath);
-
-    QString outputPath=basePath+"_merged";
+    appendLog("将保存到："+outputPath);
+    if(isSafetensors){
+        appendLog("使用safetensors格式");
+    }else{
+        appendLog("使用bin格式");
+    }
+    appendLog("分片大小："+QString::number(exportSize));
 
     QStringList args;
     args <<"export"
          <<"--model_name_or_path"<<basePath
          <<"--adapter_name_or_path"<<loraPath
          <<"--export_dir"<<outputPath
-         <<"--export_size"<<"4"//没做完，将来用户自己选
-         <<"--export_legacy_format"<<"false";//使用safetensors格式，没做完，用户将来能自己选
+         <<"--export_size"<<QString::number(exportSize)
+         <<"--export_legacy_format"<<(isSafetensors?"false":"true");
 
     QProcess *mergeProcess=new QProcess(this);
     mergeProcess->setProcessChannelMode(QProcess::MergedChannels);
@@ -159,20 +190,44 @@ void MainWindow::appendLog(const QString &message){
 }
 
 void MainWindow::setStatus(QString const&){
-
+    //没做完
 }
 
 void MainWindow::on_aboutBtn_clicked(){
     QMessageBox::about(this,"关于OllaMerge",
         "<h2>OllaMerge</h2>"
-        "<p>v0.1(Pre-Release)</p>"
+        "<p>v1.0</p>"
         "<br>"
         "作者:HandsomeTurtle0307"
         "<br>"
-        "<p>Github:<a href='https://github.com/HandsomeTurtle0307/OllaMerge'></p>"
+        "<p>GitHub：<a href='https://github.com/HandsomeTurtle0307/OllaMerge'>"
+        "HandsomeTurtle0307/OllaMerge</a></p>"
         "<br>"
         "<p>感谢使用!</p>"
-        "<p style='color: #2ecc71; font-size: 18px; font-weight: bold; font-family: \"Consolas\", \"Courier New\", monospace;'>"
+        "<p align='center'>"
+        "<p style='color: #2ecc71; font-size: 18px; font-weight: bold; font-family: Consolas, monospace;'>"
         "Built with Qt</p>"
+        "</p>"
     );
+}
+
+void MainWindow::on_selectSaveBin_clicked(){
+    QString dir=QFileDialog::getExistingDirectory(this,"选择保存的位置");
+    if(dir.isEmpty()){
+        QMessageBox::warning(this,"提示","你好像没选呢！");
+        return;
+    }
+
+    if(!QDir(dir).exists()){
+        QMessageBox::warning(this,"提示","选择的文件夹好像不存在呢，是不是选错了？");
+        return;
+    }
+
+    QDir selectedDir(dir);
+    QStringList entries=selectedDir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot);
+    if(!entries.isEmpty()){
+        QMessageBox::warning(this,"提示","选择的保存文件夹不是空的！重新选下？");
+        return;
+    }
+    ui->modleSavePathlineEdit->setText(dir);
 }
