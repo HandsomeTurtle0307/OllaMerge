@@ -24,6 +24,7 @@ private slots:
     void on_selectBaseBtn_clicked();
     void on_selectLoraBtn_clicked();
     void on_mergeBtn_clicked();
+    void on_selectSaveBin_clicked();
     void appendLog(const QString &message);
     void setStatus(const QString &status);
     void on_aboutBtn_clicked();
