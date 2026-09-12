@@ -1,6 +1,6 @@
 
 
-![License](https://img.shields.io/badge/License-GPL--3.0-orange?style=for-the-badge)![Qt](https://img.shields.io/badge/Qt-6.5-41CD52?style=for-the-badge&logo=qt)
+![License](https://img.shields.io/badge/License-GPL--3.0-orange?style=for-the-badge)    ![Qt](https://img.shields.io/badge/Qt-6.5-41CD52?style=for-the-badge&logo=qt)
 
 Chinese/English
 
