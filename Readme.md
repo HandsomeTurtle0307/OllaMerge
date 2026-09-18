@@ -6,6 +6,11 @@ Chinese/English
 
 # OllaMerge Readme
 
+> 一个公告：因为我个人的心理出现了严重的问题，甚至可以说不知道能撑到什么时候，所以这个项目的开发速度可能会严重下降，也请大家见谅。我个人目前也正在心理科和精神科就诊，并准备接受后续的治疗。感谢大家的支持~我会尽可能的坚持下去！
+
+> An announcement: Due to serious personal psychological issues—so severe that I'm uncertain how long I can continue—I may have to significantly slow down the development of this project. I sincerely appreciate your understanding. I am currently undergoing treatment with a psychologist and psychiatrist, and preparing for further therapy. Thank you all for your support—I will do my best to keep going!
+
+
 ## 这是什么
 
 OllaMerge是一个**图形化**工具，可简化LoRA适配器与原始模型的合并以及模型在Ollama上部署的过程
