@@ -278,22 +278,26 @@
      <string>不勾选此选项的话将使用bin格式</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuOllaMerge">
-    <property name="title">
-     <string>OllaMerge</string>
+   <widget class="QLabel" name="Status">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>LoRA路径：</string>
     </property>
    </widget>
-   <addaction name="menuOllaMerge"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
