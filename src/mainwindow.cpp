@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    MainWindow::setWindowTitle(QStringLiteral("OllaMerge"));
     ui->spinExportSize->addItem("1 GB",1);
     ui->spinExportSize->addItem("2 GB",2);
     ui->spinExportSize->addItem("4 GB",4);
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->spinExportSize->setCurrentIndex(2);
     ui->chkSafetensors->setChecked(true);
     ui->logTextEdit->setReadOnly(true);
+    ui->Status->setText("就绪！");
 }
 MainWindow::~MainWindow()
 {
@@ -128,11 +130,11 @@ void MainWindow::on_mergeBtn_clicked(){
         QMessageBox::critical(this,"环境错误","未找到llamafactory-cli命令哦！\n 请确保你的电脑上安装了Llama_Factory并且正确配置了Python环境！(虽然配置Python环境非常非常折磨)");
         return;
     }
-
     bool isSafetensors=ui->chkSafetensors->isChecked();
     int exportSize=ui->spinExportSize->currentData().toInt();
     ui->mergeBtn->setEnabled(false);
     appendLog("开始合并！");
+    ui->Status->setText("合并中");
     appendLog("基础模型："+basePath);
     appendLog("LoRA路径："+loraPath);
     appendLog("将保存到："+outputPath);
@@ -169,9 +171,11 @@ void MainWindow::on_mergeBtn_clicked(){
             appendLog("合并成功啦！");
             appendLog("输出目录："+outputPath);
             QMessageBox::information(this,"完成","合并成功！输出目录："+outputPath);
+            ui->Status->setText("就绪");
         }else{
             appendLog("合并失败，退出码"+QString::number(exitCode));
             QMessageBox::critical(this,"错误","合并失败，请查看日志！");
+            ui->Status->setText("就绪");
         }
         mergeProcess->deleteLater();
     });
@@ -181,6 +185,7 @@ void MainWindow::on_mergeBtn_clicked(){
         appendLog("启动合并进程失败！");
         ui->mergeBtn->setEnabled(true);
         QMessageBox::critical(this,"错误","无法启动llamafactory-cli！ \n 具体导致启动失败的原因自行检查下~");
+        ui->Status->setText("就绪");
         mergeProcess->deleteLater();
     }
 }
@@ -189,14 +194,10 @@ void MainWindow::appendLog(const QString &message){
     ui->logTextEdit->append(message);
 }
 
-void MainWindow::setStatus(QString const&){
-    //没做完
-}
-
 void MainWindow::on_aboutBtn_clicked(){
     QMessageBox::about(this,"关于OllaMerge",
         "<h2>OllaMerge</h2>"
-        "<p>v1.0</p>"
+        "<p>v1.1</p>"
         "<br>"
         "作者:HandsomeTurtle0307"
         "<br>"
