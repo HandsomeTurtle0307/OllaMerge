@@ -17,15 +17,22 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->comboQuantBit->addItem("不量化","none");
     MainWindow::setWindowTitle(QStringLiteral("OllaMerge"));
+    ui->comboQuantBit->addItem("8-bit","8");
+    ui->comboQuantBit->addItem("4-bit","4");
     ui->spinExportSize->addItem("1 GB",1);
     ui->spinExportSize->addItem("2 GB",2);
     ui->spinExportSize->addItem("4 GB",4);
     ui->spinExportSize->addItem("8 GB",8);
     ui->spinExportSize->addItem("16 GB",16);
+
     ui->spinExportSize->setCurrentIndex(2);
     ui->chkSafetensors->setChecked(true);
     ui->logTextEdit->setReadOnly(true);
+    ui->basePathlineEdit->setReadOnly(true);
+    ui->loraPathlineEdit->setReadOnly(true);
+    ui->modleSavePathlineEdit->setReadOnly(true);
     ui->Status->setText("就绪！");
 }
 MainWindow::~MainWindow()
@@ -33,90 +40,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_selectBaseBtn_clicked(){
-    QString dir=QFileDialog::getExistingDirectory(this,"选择基础模型文件夹");
-    if(dir.isEmpty()){
-        QMessageBox::warning(this,"提示","为什么不选了呢");
-        return;
-    }
-
-    if(!QDir(dir).exists()){
-        QMessageBox::critical(this,"出了点问题","选择的文件夹好像不存在呢~核实一下?");
-        return;
-    }
-
-    QFile configFile(dir+"/config.json");
-    if(!configFile.exists()){
-        QMessageBox::warning(this,"提示","选择的文件夹好像不是有效的模型目录呢~(缺少config.json) \n 检查一下选没选对目录?");
-        return;
-    }
-    ui->basePathlineEdit->setText(dir);
+void MainWindow::on_comboQuantBit_currentIndexChanged(int index){
+    Q_UNUSED(index);
+    QString bit=ui->comboQuantBit->currentData().toString();
+    bool enable=(bit != "none");
+    ui->quantDatasetLineEdit->setEnabled(enable);
 }
-
-void MainWindow::on_selectLoraBtn_clicked(){
-    QString dir=QFileDialog::getExistingDirectory(this,"选择LoRA权重文件夹");
-    if(dir.isEmpty()){
-        QMessageBox::warning(this,"提示","为什么不选了呢");
-        return;
-    }
-
-    if(!QDir(dir).exists()){
-        QMessageBox::critical(this,"提示","选择的文件夹好像不存在呢~核实一下?");
-        return;
-    }
-
-    QFile configFile(dir+"/adapter_config.json");
-    if(!configFile.exists()){
-        QMessageBox::warning(this,"提示","选择的文件夹好像不是有效的LoRA权重目录呢~(缺少adapter_config.json) \n 检查一下选没选对目录?");
-        return;
-    }
-    ui->loraPathlineEdit->setText(dir);
-}
-
-void MainWindow::on_mergeBtn_clicked(){
+void MainWindow::startMerge(){
     QString basePath=ui->basePathlineEdit->text();
     QString loraPath=ui->loraPathlineEdit->text();
     QString outputPath=ui->modleSavePathlineEdit->text();
 
-    if(basePath.isEmpty()){
-        QMessageBox::warning(this,"提示","你好像没选择基础模型文件夹哦~");
-        return;
+    if(m_quantBit!="none"){
+        outputPath=m_tempPath;
+        QDir(m_tempPath).removeRecursively();//上次可能残留，肘开！
+        QDir().mkpath(m_tempPath);
     }
-
-    if(loraPath.isEmpty()){
-        QMessageBox::warning(this,"提示","你好像没选择LoRA文件夹哦~");
-        return;
-    }
-
-    if(!QDir(basePath).exists()){
-        QMessageBox::critical(this,"提示","选择的模型文件夹好像不存在呢~核实一下?");
-        return;
-    }
-    if(!QDir(loraPath).exists()){
-        QMessageBox::critical(this,"提示","选择的LoRA文件夹好像不存在呢~核实一下?");
-        return;
-    }
-    QFile configFile(loraPath+"/adapter_config.json");
-    if(!configFile.exists()){
-        QMessageBox::warning(this,"提示","选择的文件夹好像不是有效的LoRA权重目录呢~(缺少adapter_config.json) \n 检查一下选没选对目录?");
-        return;
-    }
-    QFile configFile1(basePath+"/config.json");
-    if(!configFile1.exists()){
-        QMessageBox::warning(this,"提示","选择的文件夹好像不是有效的模型目录呢~(缺少config.json) \n 检查一下选没选对目录?");
-        return;
-    }
-
-    if(outputPath.isEmpty()){
-        QMessageBox::warning(this,"提示","你好像没选保存在哪！");
-        return;
-    }
-
-    if(!QDir(outputPath).exists()){
-        QMessageBox::warning(this,"提示","选择的保存位置好像不存在呢，是不是选错了？");
-        return;
-    }
-
     QDir selectedDir(outputPath);
     QStringList entries=selectedDir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot);
     if(!entries.isEmpty()){
@@ -166,13 +105,19 @@ void MainWindow::on_mergeBtn_clicked(){
 
 
     connect(mergeProcess,QOverload<int,QProcess::ExitStatus>::of(&QProcess::finished),[this,mergeProcess,outputPath](int exitCode,QProcess::ExitStatus){
-        ui->mergeBtn->setEnabled(true);
         if(exitCode==0){
-            appendLog("合并成功啦！");
-            appendLog("输出目录："+outputPath);
-            QMessageBox::information(this,"完成","合并成功！输出目录："+outputPath);
-            ui->Status->setText("就绪");
+            if(m_quantBit!="none"){
+                appendLog("合并完成！");
+                startQuantize();
+            }else{
+                appendLog("合并成功啦！");
+                ui->mergeBtn->setEnabled(true);
+                appendLog("输出目录："+outputPath);
+                QMessageBox::information(this,"完成","合并成功！输出目录："+outputPath);
+                ui->Status->setText("就绪");
+            }
         }else{
+            ui->mergeBtn->setEnabled(true);
             appendLog("合并失败，退出码"+QString::number(exitCode));
             QMessageBox::critical(this,"错误","合并失败，请查看日志！");
             ui->Status->setText("就绪");
@@ -189,6 +134,142 @@ void MainWindow::on_mergeBtn_clicked(){
         mergeProcess->deleteLater();
     }
 }
+void MainWindow::startQuantize(){
+    appendLog("开始量化！");
+    ui->Status->setText("量化中");
+    QStringList args;
+    args<<"export"
+         <<"--model_name_or_path"<<m_tempPath
+         <<"--export_dir"<<m_outputPath
+         <<"--export_size"<<QString::number(m_exportSize)
+         <<"--export_legacy_format"<<(m_isSafetensors?"false":"true")
+         <<"--export_quantization_bit"<<m_quantBit
+         <<"--export_quantization_dataset"<<m_quantDataset;
+    QProcess *quantProcess=new QProcess(this);
+    quantProcess->setProcessChannelMode(QProcess::MergedChannels);
+    //日志
+    connect(quantProcess,&QProcess::readyReadStandardOutput,[this,quantProcess](){
+        QString output=quantProcess->readAllStandardOutput();
+        if(!output.trimmed().isEmpty()){
+            appendLog(output);
+        }
+    });
+    connect(quantProcess,QOverload<int,QProcess::ExitStatus>::of(&QProcess::finished),[this,quantProcess](int exitCode,QProcess::ExitStatus){
+        ui->mergeBtn->setEnabled(true);
+        ui->Status->setText("就绪");
+        if(exitCode==0){
+            appendLog("量化成功！");
+            appendLog("输出目录："+m_outputPath);
+            QDir(m_tempPath).removeRecursively();
+            QMessageBox::information(this,"完成","量化成功！输出目录："+m_outputPath);
+        }else{
+            appendLog("量化失败，退出码"+QString::number(exitCode));
+            QMessageBox::critical(this,"错误","量化失败，请查看日志！");
+        }
+        quantProcess->deleteLater();
+    });
+}
+void MainWindow::on_selectQuantDatasetBtn_clicked(){
+    QString file = QFileDialog::getOpenFileName(this,"选择量化校准数据集","","JSON/JSONL 文件 (*.json *.jsonl);;所有文件 (*.*)");
+    if(file.isEmpty()){
+        QMessageBox::warning(this, "提示", "你好像没选呢！");
+        return;
+    }
+
+    if(!QFile(file).exists()){
+        QMessageBox::warning(this, "提示", "文件不存在！");
+        return;
+    }
+
+    ui->quantDatasetLineEdit->setText(file);
+}
+void MainWindow::on_selectBaseBtn_clicked(){
+    QString dir=QFileDialog::getExistingDirectory(this,"选择基础模型文件夹");
+    if(dir.isEmpty()){
+        QMessageBox::warning(this,"提示","为什么不选了呢");
+        return;
+    }
+
+    if(!QDir(dir).exists()){
+        QMessageBox::critical(this,"出了点问题","选择的文件夹好像不存在呢~核实一下?");
+        return;
+    }
+
+    QFile configFile(dir+"/config.json");
+    if(!configFile.exists()){
+        QMessageBox::warning(this,"提示","选择的文件夹好像不是有效的模型目录呢~(缺少config.json) \n 检查一下选没选对目录?");
+        return;
+    }
+    ui->basePathlineEdit->setText(dir);
+}
+
+void MainWindow::on_selectLoraBtn_clicked(){
+    QString dir=QFileDialog::getExistingDirectory(this,"选择LoRA权重文件夹");
+    if(dir.isEmpty()){
+        QMessageBox::warning(this,"提示","为什么不选了呢");
+        return;
+    }
+
+    if(!QDir(dir).exists()){
+        QMessageBox::critical(this,"提示","选择的文件夹好像不存在呢~核实一下?");
+        return;
+    }
+
+    QFile configFile(dir+"/adapter_config.json");
+    if(!configFile.exists()){
+        QMessageBox::warning(this,"提示","选择的文件夹好像不是有效的LoRA权重目录呢~(缺少adapter_config.json) \n 检查一下选没选对目录?");
+        return;
+    }
+    ui->loraPathlineEdit->setText(dir);
+}
+
+void MainWindow::on_mergeBtn_clicked(){
+    //喜闻乐见的存变量环节
+    m_basePath=ui->basePathlineEdit->text();
+    m_loraPath=ui->loraPathlineEdit->text();
+    m_outputPath=ui->modleSavePathlineEdit->text();
+    m_quantDataset=ui->quantDatasetLineEdit->text();
+    m_quantBit=ui->comboQuantBit->currentData().toString();
+    m_exportSize=ui->spinExportSize->currentData().toInt();
+    m_isSafetensors=ui->chkSafetensors->isChecked();
+    m_tempPath=m_outputPath+"_temp";//后续可能会让用户自己选
+    //额啊，Qt怎么查找替换 :)
+    QString basePath=ui->basePathlineEdit->text();
+    QString loraPath=ui->loraPathlineEdit->text();
+    QString outputPath=ui->modleSavePathlineEdit->text();
+
+    if(basePath.isEmpty()){
+        QMessageBox::warning(this,"提示","你好像没选择基础模型文件夹哦~");
+        return;
+    }
+
+    if(loraPath.isEmpty()){
+        QMessageBox::warning(this,"提示","你好像没选择LoRA文件夹哦~");
+        return;
+    }
+
+    if(outputPath.isEmpty()){
+        QMessageBox::warning(this,"提示","你好像没选保存在哪");
+        return;
+    }
+
+    //分两步（好折磨啊啊啊啊）
+    if(m_quantBit!="none"){
+        if(m_quantDataset.isEmpty() || !QFile(m_quantDataset).exists()){
+            QMessageBox::warning(this,"提示","你选择了量化，但没选量化校准数据集啊！");
+            return;
+        }
+        QDir().mkpath(m_tempPath);
+        ui->mergeBtn->setEnabled(false);
+        appendLog("量化已启用");
+        appendLog("注意：临时模型文件将保存在当前目录+_temp下，请检查你的磁盘空间");
+        startMerge();
+    }else{
+        appendLog("量化未启用");
+        ui->mergeBtn->setEnabled(false);
+        startMerge();
+    }
+}
 
 void MainWindow::appendLog(const QString &message){
     ui->logTextEdit->append(message);
@@ -197,7 +278,7 @@ void MainWindow::appendLog(const QString &message){
 void MainWindow::on_aboutBtn_clicked(){
     QMessageBox::about(this,"关于OllaMerge",
         "<h2>OllaMerge</h2>"
-        "<p>v1.1</p>"
+        "<p>v2.0</p>"
         "<br>"
         "作者:HandsomeTurtle0307"
         "<br>"
