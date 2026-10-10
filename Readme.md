@@ -6,9 +6,9 @@ Chinese/English
 
 # OllaMerge Readme
 
-> 一个公告：因为我个人的心理出现了严重的问题，甚至可以说不知道能撑到什么时候，所以这个项目的开发速度可能会严重下降，也请大家见谅。我个人目前也正在心理科和精神科就诊，并准备接受后续的治疗。感谢大家的支持~我会尽可能的坚持下去！
+> 很抱歉的通知大家，这个项目可能需要暂停开发一段时间了。因为我的心理状况很差，我现在已经住院进行治疗。因为这种医院的性质比较特殊，所以管理比较严格，基本就不能使用电脑进行编程了。谢谢大家一直的支持（虽然可能也没啥人，哈哈），等康复之后我会根据实际情况继续开发的，谢谢大家~
 
-> An announcement: Due to serious personal psychological issues—so severe that I'm uncertain how long I can continue—I may have to significantly slow down the development of this project. I sincerely appreciate your understanding. I am currently undergoing treatment with a psychologist and psychiatrist, and preparing for further therapy. Thank you all for your support—I will do my best to keep going!
+> I'm sorry to inform everyone that this project may need to be temporarily paused. Due to my poor mental health, I've been hospitalized for treatment. Since the hospital has special regulations, access to computers and programming is strictly limited. Thank you all for your continued support (though there might not be many of you, haha). Once I recover, I'll resume development based on how things go. Thanks again!
 
 
 ## 这是什么
