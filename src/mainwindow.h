@@ -31,6 +31,7 @@ private slots:
     void startQuantize();
     void on_selectQuantDatasetBtn_clicked();
     void on_comboQuantBit_currentIndexChanged(int index);
+    void on_QuantHelp_clicked();
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
