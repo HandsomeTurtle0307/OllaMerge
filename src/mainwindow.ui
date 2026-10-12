@@ -356,6 +356,19 @@
      <string>量化校准数据集名称：</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="QuantHelp">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>200</y>
+      <width>81</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>帮助</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
