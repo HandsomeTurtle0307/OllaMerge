@@ -46,6 +46,10 @@ void MainWindow::on_comboQuantBit_currentIndexChanged(int index){
     bool enable=(bit != "none");
     ui->quantDatasetLineEdit->setEnabled(enable);
 }
+
+void MainWindow::on_QuantHelp_clicked(){
+    QMessageBox::information(this,"量化数据集帮助","由于LLaMA_Factory反人类的设计，使用量化功能前，请先在 LLaMA-Factory 的 data/ 目录下放置校准文件，并在 data/dataset_info.json 中注册，然后在 OllaMerge 中填入注册的名称。校准集建议使用中文长文本，单条长度超过 1024 token，字段名需与 dataset_info.json 中 columns 配置一致。");
+}
 void MainWindow::startMerge(){
     QString basePath=ui->basePathlineEdit->text();
     QString loraPath=ui->loraPathlineEdit->text();
@@ -255,8 +259,8 @@ void MainWindow::on_mergeBtn_clicked(){
 
     //分两步（好折磨啊啊啊啊）
     if(m_quantBit!="none"){
-        if(m_quantDataset.isEmpty() || !QFile(m_quantDataset).exists()){
-            QMessageBox::warning(this,"提示","你选择了量化，但没选量化校准数据集啊！");
+        if(m_quantDataset.isEmpty()){
+            QMessageBox::warning(this,"提示","你选择了量化，但没填校准数据集的名字（这玩意的注意事项请点击输入框旁边的“帮助”按钮！）");
             return;
         }
         QDir().mkpath(m_tempPath);
