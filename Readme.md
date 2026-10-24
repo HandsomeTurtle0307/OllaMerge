@@ -6,9 +6,9 @@ Chinese/English
 
 # OllaMerge Readme
 
-> 很抱歉的通知大家，这个项目可能需要暂停开发一段时间了。因为我的心理状况很差，我现在已经住院进行治疗。因为这种医院的性质比较特殊，所以管理比较严格，基本就不能使用电脑进行编程了。谢谢大家一直的支持（虽然可能也没啥人，哈哈），等康复之后我会根据实际情况继续开发的，谢谢大家~
+> 额啊，最近我状态恢复的不错，所以应该可以很快恢复新项目的开发咯，哈哈，谢谢大家支持~
 
-> I'm sorry to inform everyone that this project may need to be temporarily paused. Due to my poor mental health, I've been hospitalized for treatment. Since the hospital has special regulations, access to computers and programming is strictly limited. Thank you all for your continued support (though there might not be many of you, haha). Once I recover, I'll resume development based on how things go. Thanks again!
+> Ah, I've been doing pretty well lately, so I should be able to get back to developing the new project soon—haha, thanks for your support!
 
 
 ## 这是什么
