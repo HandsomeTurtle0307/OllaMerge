@@ -8,8 +8,12 @@ Chinese/English
 
 > 额啊，最近我状态恢复的不错，所以应该可以很快恢复新项目的开发咯，哈哈，谢谢大家支持~
 
-> Ah, I've been doing pretty well lately, so I should be able to get back to developing the new project soon—haha, thanks for your support!
+> Ah, I've been doing pretty well lately, so I should be able to get back to developing th new project soon—haha, thanks for your support!
 
+# 双语界面展示 Bilingual interface display
+<img width="1800" height="1456" alt="Snipaste_2026-10-28_13-31-21" src="https://github.com/user-attachments/assets/055042a9-4534-4eba-b7c5-a10c387be28d" />
+
+<img width="1800" height="1456" alt="Snipaste_2026-10-28_13-31-53" src="https://github.com/user-attachments/assets/2007de88-0d2a-4098-b7aa-eca7eb23542d" />
 
 ## 这是什么
 
