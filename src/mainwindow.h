@@ -10,12 +10,18 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
+
+class EnvironmentChecker;
+class QShowEvent;
+class QPropertyAnimation;
+class QTemporaryDir;
 
 class MainWindow : public QMainWindow
 {
@@ -29,14 +35,25 @@ private slots:
     void on_aboutBtn_clicked();
     void startMerge();
     void startQuantize();
-    void on_selectQuantDatasetBtn_clicked();
     void on_comboQuantBit_currentIndexChanged(int index);
     void on_QuantHelp_clicked();
+    void onLanguageComboChanged(int index);
+    void on_themeBtn_clicked();
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+protected:
+    void showEvent(QShowEvent *event) override;
+
 private:
+    void setupLanguageSelector();
+    void retranslateUi();
+    void setStatus(const QString &statusKey);
+    void updateThemeUi();
+    void updateStatusDot();
+    void handleEnvironmentReport();
+
     Ui::MainWindow *ui;
     QString m_basePath;//基础模型路径
     QString m_loraPath;//LoRA路径
@@ -46,6 +63,11 @@ private:
     //bool m_isQuantizing;//是否在量化中
     int m_exportSize;//分片大小（可能是切片吧）
     bool m_isSafetensors;//是否Safetensors（顾名思义，哈哈哈）
-    QString m_tempPath;//临时目录（后续可能会让用户自己选，但是现在没时间搞了，呜呜呜）
+    QString m_tempPath;//本次量化流程使用的临时合并目录
+    QString m_statusKey = QStringLiteral("ready");//当前状态对应的翻译键
+    bool m_themeAnimating = false;
+    QPropertyAnimation *m_statusPulse = nullptr;
+    QTemporaryDir *m_tempDir = nullptr;
+    EnvironmentChecker *m_envChecker = nullptr;
 };
 #endif // MAINWINDOW_H
